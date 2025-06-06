@@ -1,2 +1,10 @@
 # goShell
-Unix shell built in Go
+
+A Unix shell built with **Go**.
+
+---
+
+## To-Do
+
+* Add autocomplete
+* Add visual elements
