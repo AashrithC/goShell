@@ -1,6 +1,6 @@
 module github.com/Aashrithc/goShell
 
-go 1.24.3
+go 1.18
 
 require github.com/c-bata/go-prompt v0.2.6
 
