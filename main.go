@@ -27,7 +27,7 @@ func main() {
 	fmt.Println("goShell - Enhanced Unix Shell Wrapper")
 	fmt.Println("Type 'exit' to quit, use Tab for autocomplete")
 	fmt.Println("----------------------------------------")
-	
+
 	p := prompt.New(
 		executor,
 		completer,
@@ -48,7 +48,7 @@ func executor(input string) {
 	if input == "" {
 		return
 	}
-	
+
 	if err := execInput(input); err != nil {
 		fmt.Printf("Error: %v\n", err)
 	}
@@ -58,7 +58,7 @@ func executor(input string) {
 func completer(d prompt.Document) []prompt.Suggest {
 	text := d.TextBeforeCursor()
 	words := strings.Fields(text)
-	
+
 	// If we're typing the first word, suggest commands
 	if len(words) <= 1 {
 		word := ""
@@ -67,7 +67,7 @@ func completer(d prompt.Document) []prompt.Suggest {
 		}
 		return getCommandSuggestions(word)
 	}
-	
+
 	// For subsequent words, suggest files/directories
 	currentWord := ""
 	if len(text) > 0 && text[len(text)-1] != ' ' {
@@ -77,14 +77,14 @@ func completer(d prompt.Document) []prompt.Suggest {
 			currentWord = text[lastSpace+1:]
 		}
 	}
-	
+
 	return getFileSuggestions(currentWord)
 }
 
 // getCommandSuggestions returns command suggestions
 func getCommandSuggestions(word string) []prompt.Suggest {
 	suggestions := []prompt.Suggest{}
-	
+
 	for _, cmd := range commonCommands {
 		if strings.HasPrefix(cmd, word) {
 			suggestions = append(suggestions, prompt.Suggest{
@@ -93,24 +93,24 @@ func getCommandSuggestions(word string) []prompt.Suggest {
 			})
 		}
 	}
-	
+
 	return suggestions
 }
 
 // getFileSuggestions returns file and directory suggestions with zsh-like behavior
 func getFileSuggestions(currentWord string) []prompt.Suggest {
 	suggestions := []prompt.Suggest{}
-	
+
 	// Determine the directory to search and the prefix to match
 	searchDir := "."
 	prefix := currentWord
-	
+
 	// Handle paths with directories (e.g., "src/ma" -> search in "src/", match "ma*")
 	if strings.Contains(currentWord, "/") {
 		lastSlash := strings.LastIndex(currentWord, "/")
 		searchDir = currentWord[:lastSlash+1]
 		prefix = currentWord[lastSlash+1:]
-		
+
 		// Handle absolute paths
 		if strings.HasPrefix(searchDir, "/") {
 			// Absolute path
@@ -128,28 +128,28 @@ func getFileSuggestions(currentWord string) []prompt.Suggest {
 			}
 		}
 	}
-	
+
 	// Clean the search directory path
 	searchDir = filepath.Clean(searchDir)
-	
+
 	// Read directory contents
 	files, err := os.ReadDir(searchDir)
 	if err != nil {
 		return suggestions
 	}
-	
+
 	for _, file := range files {
 		name := file.Name()
-		
+
 		// Skip hidden files unless prefix starts with "."
 		if strings.HasPrefix(name, ".") && !strings.HasPrefix(prefix, ".") {
 			continue
 		}
-		
+
 		// Check if the file matches the prefix
 		if strings.HasPrefix(name, prefix) {
 			var suggestion prompt.Suggest
-			
+
 			if file.IsDir() {
 				// For directories, construct the full path and add trailing slash
 				fullPath := constructFullPath(currentWord, name, true)
@@ -160,7 +160,7 @@ func getFileSuggestions(currentWord string) []prompt.Suggest {
 			} else {
 				// For files, construct the full path
 				fullPath := constructFullPath(currentWord, name, false)
-				
+
 				// Get file info for better descriptions
 				desc := getFileDescription(filepath.Join(searchDir, name))
 				suggestion = prompt.Suggest{
@@ -168,11 +168,11 @@ func getFileSuggestions(currentWord string) []prompt.Suggest {
 					Description: desc,
 				}
 			}
-			
+
 			suggestions = append(suggestions, suggestion)
 		}
 	}
-	
+
 	return suggestions
 }
 
@@ -188,7 +188,7 @@ func constructFullPath(currentWord, fileName string, isDir bool) string {
 		}
 		return result
 	}
-	
+
 	// Simple case: just the filename
 	if isDir {
 		return fileName + "/"
@@ -202,12 +202,12 @@ func getFileDescription(filePath string) string {
 	if err != nil {
 		return "File"
 	}
-	
+
 	// Check if it's executable
 	if info.Mode()&0111 != 0 {
 		return "Executable"
 	}
-	
+
 	// Check file extension for common types
 	ext := strings.ToLower(filepath.Ext(filePath))
 	switch ext {
@@ -292,7 +292,7 @@ func changeDirectory(path string) error {
 		}
 		path = filepath.Join(home, path[1:])
 	}
-	
+
 	// Handle relative paths
 	if !filepath.IsAbs(path) {
 		pwd, err := os.Getwd()
@@ -301,6 +301,8 @@ func changeDirectory(path string) error {
 		}
 		path = filepath.Join(pwd, path)
 	}
-	
+
 	return os.Chdir(path)
 }
+
+//poop
